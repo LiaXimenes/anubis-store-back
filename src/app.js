@@ -38,4 +38,32 @@ app.post("/sign-up", async (req, res) => {
     }
 })
 
+app.post("/log-in", async (req, res) => {
+    const {email, password} = req.body;
+    const token = uuid();
+
+    try{
+        const result = await connection.query(`
+        SELECT * 
+        FROM customers
+        WHERE email = $1        
+        `, [email])
+
+        const user = result.rows[0];
+        if(user && bcrypt.compareSync(password, user.password)){
+            await connection.query(`
+            INSERT INTO sessions ("userId", token) 
+            VALUES ($1,$2)
+            `, [user.id, token]);
+
+            res.status(200).send(token);
+        } else {
+            res.sendStatus(401);
+        }
+
+    } catch{
+        res.sendStatus(500);
+    }
+})
+
 export default app;
