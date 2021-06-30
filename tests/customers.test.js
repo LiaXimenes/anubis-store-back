@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 import app from '../src/app.js';
 import bcrypt from 'bcrypt';
-import connection from "../src/connection.js";
+import connection from "../src/database.js";
 
 beforeEach(async () => {
     await connection.query(`DELETE FROM customers`);

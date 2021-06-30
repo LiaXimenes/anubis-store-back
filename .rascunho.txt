@@ -1,0 +1,3 @@
+NODE_ENV=test node src/server.js
+# ou para os testes
+NODE_ENV=test npx jest -i

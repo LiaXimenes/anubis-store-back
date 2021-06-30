@@ -50,7 +50,7 @@ app.post("/sign-up", async (req, res) => {
         res.sendStatus(400);
     }  
     
-})
+});
 
 app.post("/log-in", async (req, res) => {
     const {email, password} = req.body;
@@ -90,14 +90,15 @@ app.post("/log-in", async (req, res) => {
     } else{
         res.sendStatus(400);
     }
-})
+});
 
 app.get('/', async (req, res) => {
     try {
         const timelineContent = await connection.query(
             `SELECT * FROM products`
         );
-        res.send(timelineContent.rows);
+        
+        res.status(201).send(timelineContent.rows);
     } catch(e) {
         console.log(e);
         res.sendStatus(400);

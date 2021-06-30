@@ -1,10 +1,16 @@
 import pg from 'pg';
-const { Pool } = pg;
-const connection = new Pool({
-    user: 'postgres',
-    password: '35728892',
-    host: 'localhost',
-    port: 5432,
-    database: 'anubis'
-});
+import dotenv from "dotenv"
+
+const {Pool} = pg;
+
+dotenv.config()
+
+const connection = new Pool ({
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    database: process.env.NODE_ENV === 'test' ? 'anubis_test' : 'anubis'
+})
+
 export default connection;
