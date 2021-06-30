@@ -1,21 +1,24 @@
 import express from 'express';
 import cors from 'cors';
-import {v4 as uuid} from 'uuid';
-import joi from 'joi';
 import connection from './database.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post('/', async(req, res) => {
+app.get('/', async (req, res) => {
     try {
-        const timeline = await connection.query(
+        const timelineContent = await connection.query(
             `SELECT * FROM products`
         );
-        
+        console.log(timelineContent);
+        res.send(timelineContent.rows);
     } catch(e) {
         console.log(e);
-        res.sendStatus();
+        res.sendStatus(400);
     }
+});
+
+app.listen(4000, ()=>{
+    console.log('server running on port 4k ;)')
 });
