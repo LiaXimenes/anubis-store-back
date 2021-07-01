@@ -1,15 +1,13 @@
 import express from 'express';
 import cors from 'cors';
+import connection from './database.js';
 import { v4 as uuid } from 'uuid';
 import bcrypt from 'bcrypt';
 import Joi from 'joi';
 
-import connection from "../src/connection.js";
-
-
 const app = express();
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
 app.post("/sign-up", async (req, res) => {
     const {name, email, password} = req.body;
@@ -52,7 +50,7 @@ app.post("/sign-up", async (req, res) => {
         res.sendStatus(400);
     }  
     
-})
+});
 
 app.post("/log-in", async (req, res) => {
     const {email, password} = req.body;
@@ -92,6 +90,20 @@ app.post("/log-in", async (req, res) => {
     } else{
         res.sendStatus(400);
     }
-})
+});
+
+app.get('/', async (req, res) => {
+    try {
+        const timelineContent = await connection.query(
+            `SELECT * FROM products`
+        );
+        
+        res.status(201).send(timelineContent.rows);
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(400);
+    }
+});
+
 
 export default app;
