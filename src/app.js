@@ -105,9 +105,9 @@ app.get('/homepage', async (req, res) => {
                 `SELECT products.* 
                 FROM products
                 JOIN products_categories
-                ON products.id = products_categories."categoryId"
+                ON products.id = products_categories."productId"
                 JOIN categories
-                ON categories.id = products_categories."productId"
+                ON categories.id = products_categories."categoryId"
                 WHERE categories.name = $1`, [category]
             );
         }
@@ -118,5 +118,16 @@ app.get('/homepage', async (req, res) => {
     }
 });
 
+app.get('/categories', async (req, res) => {
+    try {
+        const categoriesList = await connection.query(
+            `SELECT name FROM categories`
+        );
+        res.status(201).send(categoriesList.rows);
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(400);
+    }
+});
 
 export default app;
