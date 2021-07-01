@@ -130,4 +130,48 @@ app.get('/categories', async (req, res) => {
     }
 });
 
+app.post('/cart', async (req, res)=> {//falta testar
+    const {productId} = req.body;
+    const authorization = req.headers.authorization;
+    const token = authorization?.replace("Bearer ", ""); 
+    if (!token) return res.sendStatus(401);   
+    try {
+        const sessionId = await connection.query(
+            `SELECT id
+            FROM sessions
+            WHERE token = $1`,
+            [token]
+        )
+        await connection.query(
+            `INSERT INTO cart
+            ("sessionId", "productId")
+            VALUES ($1, $2)`,
+            [sessionId, productId]
+        );
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+app.get('/cart', async (req, res) => {//falta testar
+    try {
+        const authorization = req.headers.authorization;
+        const token = authorization?.replace("Bearer ", "");
+        if (!token) return res.sendStatus(401);
+        const productsOnCart = await connection.query(
+            `SELECT products.* 
+            FROM products
+            JOIN cart
+            ON products.id = cart."productId"
+            JOIN sessions
+            ON sessions.id = cart."sessionId"
+            WHERE sessions.token = $1`, [token]
+        );
+        res.status(201).send(productsOnCart.rows);
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(400);
+    }
+});
+
 export default app;
