@@ -17,13 +17,13 @@ beforeEach(async () => {
     );
 });
 
-describe("GET /", () => {
+describe("GET /homepage", () => {
     it("returns status 201 for successful request", async () =>{
-        const result = await supertest(app).get("/");
+        const result = await supertest(app).get("/homepage");
         expect(result.status).toEqual(201);
     });
     it("returns array of products for successful request", async () =>{
-        const result = await supertest(app).get("/");
+        const result = await supertest(app).get("/homepage");
         expect(result.body).toEqual(arrayOfProducts.rows);
     });  
 });
