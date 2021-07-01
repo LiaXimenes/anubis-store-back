@@ -92,18 +92,42 @@ app.post("/log-in", async (req, res) => {
     }
 });
 
-app.get('/', async (req, res) => {
+app.get('/homepage', async (req, res) => {
+    const category = req.query.category;
     try {
-        const timelineContent = await connection.query(
-            `SELECT * FROM products`
-        );
-        
-        res.status(201).send(timelineContent.rows);
+        let timelineContent;
+        if (!category){
+            timelineContent = await connection.query(
+                `SELECT * FROM products`
+            );
+        } else {
+            timelineContent = await connection.query(
+                `SELECT products.* 
+                FROM products
+                JOIN products_categories
+                ON products.id = products_categories."productId"
+                JOIN categories
+                ON categories.id = products_categories."categoryId"
+                WHERE categories.name = $1`, [category]
+            );
+        }
+        return res.status(201).send(timelineContent.rows);
     } catch(e) {
         console.log(e);
         res.sendStatus(400);
     }
 });
 
+app.get('/categories', async (req, res) => {
+    try {
+        const categoriesList = await connection.query(
+            `SELECT name FROM categories`
+        );
+        res.status(201).send(categoriesList.rows);
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(400);
+    }
+});
 
 export default app;
