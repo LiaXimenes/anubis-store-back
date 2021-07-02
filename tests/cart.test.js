@@ -48,6 +48,12 @@ describe("GET /cart", () => {
     });  
 });
 
+describe("DELETE /cart", () => {
+    it("returns status 201 for successful request", async () => {
+        const result = await supertest(app).delete("/cart").set("autorization")
+    })
+})
+
 
 afterAll(() => {
     connection.end();
