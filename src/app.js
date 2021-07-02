@@ -133,7 +133,7 @@ app.get('/categories', async (req, res) => {
 app.post('/cart', async (req, res)=> {//falta testar
     const {productId} = req.body;
     const authorization = req.headers.authorization;
-    const token = authorization?.replace("Bearer ", ""); 
+    const token = authorization?.replace("bearer ", ""); 
     if (!token) return res.sendStatus(401);   
     try {
         const sessionId = await connection.query(
@@ -141,25 +141,28 @@ app.post('/cart', async (req, res)=> {//falta testar
             FROM sessions
             WHERE token = $1`,
             [token]
-        )
+        );
         await connection.query(
             `INSERT INTO cart
             ("sessionId", "productId")
             VALUES ($1, $2)`,
-            [sessionId, productId]
+            [sessionId.rows[0].id, productId]
         );
+        res.sendStatus(200);
     } catch(e) {
         console.log(e);
+        res.sendStatus(400);
     }
 });
 
-app.get('/cart', async (req, res) => {//falta testar
+app.get('/cart', async (req, res) => {
     try {
         const authorization = req.headers.authorization;
-        const token = authorization?.replace("Bearer ", "");
+        const token = authorization?.replace("bearer ", "");
         if (!token) return res.sendStatus(401);
         const productsOnCart = await connection.query(
-            `SELECT products.* 
+            `SELECT products.*,
+            cart.id as "cartId" 
             FROM products
             JOIN cart
             ON products.id = cart."productId"
@@ -173,5 +176,20 @@ app.get('/cart', async (req, res) => {//falta testar
         res.sendStatus(400);
     }
 });
+
+app.delete('/cart', async (req, res)=> {
+    const id = req.headers.cartid
+    console.log(id);
+    try {
+        await connection.query(
+            `DELETE FROM cart
+            WHERE id = $1`,
+            [id]
+        );
+        res.sendStatus(200);
+    } catch(e) {
+        res.sendStatus(400);
+    }
+})
 
 export default app;
