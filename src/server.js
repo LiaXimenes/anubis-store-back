@@ -1,5 +1,6 @@
-import app from './app.js'
+import './setup.js'; 
+import app from './app.js';
 
-app.listen(4000, () =>
-    console.log("server listening at 4000")
-)
+app.listen(process.env.PORT, () => {
+    console.log("Server running on port " + process.env.PORT);
+});
