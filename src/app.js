@@ -4,6 +4,7 @@ import connection from './database.js';
 import { v4 as uuid } from 'uuid';
 import bcrypt from 'bcrypt';
 import Joi from 'joi';
+import sgMail from '@sendgrid/mail';
 
 const app = express();
 app.use(cors());
@@ -129,5 +130,109 @@ app.get('/categories', async (req, res) => {
         res.sendStatus(400);
     }
 });
+
+app.post('/cart', async (req, res)=> {//falta testar
+    const {productId} = req.body;
+    const authorization = req.headers.authorization;
+    const token = authorization?.replace("bearer ", ""); 
+    if (!token) return res.sendStatus(401);   
+    try {
+        const sessionId = await connection.query(
+            `SELECT id
+            FROM sessions
+            WHERE token = $1`,
+            [token]
+        );
+        await connection.query(
+            `INSERT INTO cart
+            ("sessionId", "productId")
+            VALUES ($1, $2)`,
+            [sessionId.rows[0].id, productId]
+        );
+        res.sendStatus(200);
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(400);
+    }
+});
+
+app.get('/cart', async (req, res) => {
+    try {
+        const authorization = req.headers.authorization;
+        const token = authorization?.replace("bearer ", "");
+        if (!token) return res.sendStatus(401);
+        const productsOnCart = await connection.query(
+            `SELECT products.*,
+            cart.id as "cartId" 
+            FROM products
+            JOIN cart
+            ON products.id = cart."productId"
+            JOIN sessions
+            ON sessions.id = cart."sessionId"
+            WHERE sessions.token = $1`, [token]
+        );
+        res.status(201).send(productsOnCart.rows);
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(400);
+    }
+});
+
+app.delete('/cart', async (req, res)=> {
+    const id = req.headers.cartid
+    console.log(id);
+    try {
+        await connection.query(
+            `DELETE FROM cart
+            WHERE id = $1`,
+            [id]
+        );
+        res.sendStatus(200);
+    } catch(e) {
+        res.sendStatus(400);
+    }
+});
+
+app.get('/confirm', async (req, res)=> {
+
+    try {
+        const authorization = req.headers.authorization;
+        const token = authorization?.replace("bearer ", "");
+        if (!token) return res.sendStatus(401);
+
+        const getUsersEmail = await connection.query(
+            `SELECT customers.email
+            FROM customers
+            JOIN sessions 
+            ON sessions."userId" = customers.id
+            WHERE sessions.token = $1`, [token]
+        );
+
+        const API_KEY = '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';
+
+        sgMail.setApiKey(API_KEY)
+
+        console.log(getUsersEmail.rows[0].email)
+
+        const message = {
+            to: getUsersEmail.rows[0].email,
+            from: 'liathay12345@gmail.com',
+            subject: 'Confirmação de pedido Anúbis',
+            text: 'Olá! Muito obrigada por efetuar sua compra com a gente.',
+        }
+
+        sgMail
+            .send(message)
+            .then(console.log('deu bom'))
+            .catch((error) => console.log(error.message))
+
+        res.sendStatus(201);
+        console.log("email enviado")
+
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(400);
+    }
+})
 
 export default app;
