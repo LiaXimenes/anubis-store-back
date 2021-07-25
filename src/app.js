@@ -131,7 +131,7 @@ app.get('/categories', async (req, res) => {
     }
 });
 
-app.post('/cart', async (req, res)=> {//falta testar
+app.post('/cart', async (req, res)=> {
     const {productId} = req.body;
     const authorization = req.headers.authorization;
     const token = authorization?.replace("bearer ", ""); 
