@@ -50,8 +50,10 @@ describe("GET /cart", () => {
 
 describe("DELETE /cart", () => {
     it("returns status 201 for successful request", async () => {
-        const result = await supertest(app).delete("/cart").set("autorization")
+        const result = await supertest(app).delete("/cart").set("authorization","bearer tokenvalido")
+        expect(result.status).toEqual(201);
     })
+    
 })
 
 

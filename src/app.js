@@ -135,7 +135,8 @@ app.post('/cart', async (req, res)=> {//falta testar
     const {productId} = req.body;
     const authorization = req.headers.authorization;
     const token = authorization?.replace("bearer ", ""); 
-    if (!token) return res.sendStatus(401);   
+    if (!token) return res.sendStatus(401);  
+
     try {
         const sessionId = await connection.query(
             `SELECT id
@@ -193,7 +194,7 @@ app.delete('/cart', async (req, res)=> {
     }
 });
 
-app.get('/confirm', async (req, res)=> {
+app.post('/confirm', async (req, res)=> {
 
     try {
         const authorization = req.headers.authorization;
@@ -201,18 +202,15 @@ app.get('/confirm', async (req, res)=> {
         if (!token) return res.sendStatus(401);
 
         const getUsersEmail = await connection.query(
-            `SELECT customers.email
-            FROM customers
-            JOIN sessions 
-            ON sessions."userId" = customers.id
-            WHERE sessions.token = $1`, [token]
+            `SELECT c.email 
+            FROM customers as c, sessions as s 
+            WHERE CAST(c.id as INTEGER) = CAST(s."userId" as INTEGER) 
+            AND s.token = $1`, [token]
         );
 
         const API_KEY = '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';
 
         sgMail.setApiKey(API_KEY)
-
-        console.log(getUsersEmail.rows[0].email)
 
         const message = {
             to: getUsersEmail.rows[0].email,
