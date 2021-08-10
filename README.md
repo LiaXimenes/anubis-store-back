@@ -16,6 +16,7 @@ Below are the implemented features:
 The following tools and frameworks were used in the construction of the project:
 
 * Node.js
+* Express
 * PostgreSQL
 * Jest
 
