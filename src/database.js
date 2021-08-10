@@ -11,15 +11,15 @@ let databaseConfig = {
 }
 
 
-if(process.env.NODE_ENV === "production"){
-    databaseConfig = {
-        connectionString: process.env.DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false
-        }
-    }
+// if(process.env.NODE_ENV === "production"){
+//     databaseConfig = {
+//         connectionString: process.env.DATABASE_URL,
+//         ssl: {
+//             rejectUnauthorized: false
+//         }
+//     }
 
-}
+// }
 
 const connection = new Pool(databaseConfig);
 
