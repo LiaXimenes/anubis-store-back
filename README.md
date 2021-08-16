@@ -1,6 +1,9 @@
 # AnúbisStore (back-end)
 My friend and I create this pet store together. You can view are products, register and maybe even buy thing if you like our store 😻 take a look!
 
+
+![Peek anubisStore](https://user-images.githubusercontent.com/81389119/129632978-b9f2e87b-14d6-4607-be82-627aebd79828.gif)
+
 ## About
 This is a web apllication built to be a e-commerce. At the store you can find products, search for them with tags, a register page and a cart.
 Below are the implemented features:
