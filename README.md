@@ -23,5 +23,35 @@ The following tools and frameworks were used in the construction of the project:
 * PostgreSQL
 * Jest
 
-## How to run
-Under construction, sorry :(
+## How to Run
+1. Clone this repository
+2. Clone the front-end repository at https://github.com/LiaXimenes/anubis-store-front
+3. Follow instructions to run front-end https://github.com/LiaXimenes/anubis-store-front
+4. Create a database using the ``dump.sql`` file inside the ``dump``
+- 4.1 Open your terminal in the same path as the ``dump.sql`` file is located.
+- 4.2 Access PostgreSQL
+```bash
+sudo su postgres
+psql postgres
+```
+- 4.3 Create a database
+```bash
+CREATE DATABASE [database_name];
+```
+- 4.4 Then, quit psql and import the dump.sql file to your database
+```bash
+\q
+psql [database_name] < dump.sql
+```
+- 4.5 Finally, you can connect your terminal on your database!
+```bash
+\c [database_name]
+```
+5. Install dependencies
+```bash
+npm i
+```
+6. Run the back-end with
+```bash
+npm run dev
+```
